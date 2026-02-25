@@ -12,6 +12,14 @@ io.on("connection", (socket) => {
   socket.on("ping", () => {
     io.emit("pong", `${socket.id} sent ping`);
   });
+
+  socket.on("join", ({ room }) => {
+    socket.join(room);
+  });
+
+  socket.on("message", ({ room, message }) => {
+    io.to(room).emit("message", message);
+  });
 });
 
 app.get("/", (req, res) => {
