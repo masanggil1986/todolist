@@ -38,6 +38,11 @@ io.on("connection", (socket) => {
     rooms[room].push(newToDo);
     io.to(room).emit("update", rooms[room]);
   });
+
+  socket.on("deleteToDo", ({ room, id }) => {
+    rooms[room] = rooms[room].filter(t => t.id !== id);
+    io.to(room).emit("update", rooms[room]);
+  });
 });
 
 app.get("/", (req, res) => {
