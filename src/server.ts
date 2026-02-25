@@ -56,6 +56,10 @@ io.on("connection", (socket) => {
     io.to(room).emit("update", rooms[room]);
   });
 
+  socket.on("startEditing", ({ room, id }) => {
+    socket.to(room).emit("editing", { id, isEditing: true });
+  });
+
   socket.on("disconnect", () => {
     io.emit("userCount", { count: io.sockets.sockets.size });
   });
