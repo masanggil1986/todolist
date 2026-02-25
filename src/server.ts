@@ -24,7 +24,7 @@ io.on("connection", (socket) => {
       rooms[room] = [];
     }
 
-    io.to(room).emit("init", rooms[room]);
+    socket.to(room).emit("init", rooms[room]);
   });
 
   socket.on("message", ({ room, message }) => {
