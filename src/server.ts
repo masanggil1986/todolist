@@ -17,6 +17,8 @@ interface Todo {
 const rooms: Record<string, Todo[]> = {};
 
 io.on("connection", (socket) => {
+  io.emit("userCount", { count: io.sockets.sockets.size });
+
   socket.on("join", ({ room }) => {
     socket.join(room);
 
@@ -52,6 +54,10 @@ io.on("connection", (socket) => {
   socket.on("deleteToDo", ({ room, id }) => {
     rooms[room] = rooms[room].filter(t => t.id !== id);
     io.to(room).emit("update", rooms[room]);
+  });
+
+  socket.on("disconnect", () => {
+    io.emit("userCount", { count: io.sockets.sockets.size });
   });
 });
 
