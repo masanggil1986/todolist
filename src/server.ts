@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
       rooms[room] = [];
     }
 
-    io.to(room).emit("init", rooms[room]);
+    socket.emit("init", rooms[room]);
   });
 
   socket.on("message", ({ room, message }) => {
@@ -53,14 +53,14 @@ io.on("connection", (socket) => {
       id: crypto.randomUUID(),
       text,
       completed: false,
-      createdBy: user ? user.name : "알수없음"
+      createdBy: user ? user.name : "알수없음",
     };
     rooms[room].push(newToDo);
     io.to(room).emit("update", rooms[room]);
   });
 
   socket.on("toggleToDo", ({ room, id }) => {
-    const todo = rooms[room].find(t => t.id === id);
+    const todo = rooms[room].find((t) => t.id === id);
     if (todo) {
       todo.completed = true;
       io.to(room).emit("update", rooms[room]);
@@ -68,12 +68,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("deleteToDo", ({ room, id }) => {
-    rooms[room] = rooms[room].filter(t => t.id !== id);
+    rooms[room] = rooms[room].filter((t) => t.id !== id);
     io.to(room).emit("update", rooms[room]);
   });
 
   socket.on("startEditing", ({ room, id }) => {
-    io.to(room).emit("editing", { id, isEditing: true });
+    const user = users[socket.id];
+    io.to(room).emit("editing", { id, user: user ? user.name : "알수없음" });
   });
 
   socket.on("disconnect", () => {
