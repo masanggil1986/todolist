@@ -8,16 +8,30 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+interface User {
+  id: string;
+  name: string;
+}
+
 interface Todo {
   id: string;
   text: string;
   completed: boolean;
+  createdBy: string;
 }
 
+const users: Record<string, User> = {};
 const rooms: Record<string, Todo[]> = {};
 
 io.on("connection", (socket) => {
   io.emit("userCount", { count: io.sockets.sockets.size });
+
+  socket.on("setName", ({ name }: { name: string }) => {
+    users[socket.id] = {
+      id: socket.id,
+      name: name,
+    };
+  });
 
   socket.on("join", ({ room }) => {
     socket.join(room);
@@ -34,10 +48,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("addToDo", ({ room, text }) => {
+    const user = users[socket.id];
     const newToDo = {
       id: crypto.randomUUID(),
       text,
       completed: false,
+      createdBy: user ? user.name : "알수없음"
     };
     rooms[room].push(newToDo);
     io.to(room).emit("update", rooms[room]);
