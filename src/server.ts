@@ -8,17 +8,35 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-io.on("connection", (socket) => {
-  socket.on("ping", () => {
-    io.emit("pong", `${socket.id} sent ping`);
-  });
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
 
+const rooms: Record<string, Todo[]> = {};
+
+io.on("connection", (socket) => {
   socket.on("join", ({ room }) => {
     socket.join(room);
+
+    if (!rooms[room]) {
+      rooms[room] = [];
+    }
   });
 
   socket.on("message", ({ room, message }) => {
     io.to(room).emit("message", message);
+  });
+
+  socket.on("addToDo", ({ room, text }) => {
+    const newToDo = {
+      id: crypto.randomUUID(),
+      text,
+      completed: false,
+    };
+    rooms[room].push(newToDo);
+    io.to(room).emit("update", rooms[room]);
   });
 });
 
