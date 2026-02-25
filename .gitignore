@@ -1,0 +1,13 @@
+# Node.js
+node_modules/
+dist/
+
+# Visual Studio Code
+.vscode/
+
+# Logs and temporary files
+*.log
+*~
+
+# Environment variables (example)
+.env
