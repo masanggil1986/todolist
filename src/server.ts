@@ -39,6 +39,14 @@ io.on("connection", (socket) => {
     io.to(room).emit("update", rooms[room]);
   });
 
+  socket.on("toggleToDo", ({ room, id }) => {
+    const todo = rooms[room].find(t => t.id === id);
+    if (todo) {
+      todo.completed = true;
+      io.to(room).emit("update", rooms[room]);
+    }
+  });
+
   socket.on("deleteToDo", ({ room, id }) => {
     rooms[room] = rooms[room].filter(t => t.id !== id);
     io.to(room).emit("update", rooms[room]);
