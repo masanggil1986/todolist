@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
       rooms[room] = [];
     }
 
-    socket.to(room).emit("init", rooms[room]);
+    io.to(room).emit("init", rooms[room]);
   });
 
   socket.on("message", ({ room, message }) => {
@@ -57,7 +57,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("startEditing", ({ room, id }) => {
-    socket.to(room).emit("editing", { id, isEditing: true });
+    io.to(room).emit("editing", { id, isEditing: true });
   });
 
   socket.on("disconnect", () => {
