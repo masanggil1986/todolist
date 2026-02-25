@@ -23,6 +23,8 @@ io.on("connection", (socket) => {
     if (!rooms[room]) {
       rooms[room] = [];
     }
+
+    io.to(room).emit("init", rooms[room]);
   });
 
   socket.on("message", ({ room, message }) => {
