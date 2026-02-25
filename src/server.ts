@@ -9,7 +9,9 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 io.on("connection", (socket) => {
-  io.emit("welcome", { message: `Hello ${socket.id}` });
+  socket.on("ping", () => {
+    io.emit("pong", `${socket.id} sent ping`);
+  });
 });
 
 app.get("/", (req, res) => {
